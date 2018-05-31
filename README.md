@@ -4,6 +4,6 @@ Requirements:
 - matplotlib
 - jupyter
 
-run the following command from the downloaded folder
+run the following command from the downloaded folder  
 `jupyter notebook Hopfield.ipynb`
 
