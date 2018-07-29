@@ -142,13 +142,14 @@ def simple_hebbian2():
     pprint(hp.list_attractors())
     
 def multiple_hebbian():
-    matrix = np.array([[1, 1, 1, 1],
-                               [1, -1, 1, -1],
-                               [1, 1, -1, -1]])
+    matrix = np.array([[1, 1, -1, 1, -1, 1, -1, -1],
+                       [1, 1, -1, 1, -1, -1, -1, 1],
+                       [1, 1, 1, 1, -1, -1, -1, -1],
+                       [-1, 1, -1, 1, -1, 1, -1, 1]])
     hp = Hopfield.multiple_hebbian(matrix)
     print("attractors:")
-    pprint(hp.list_attractors())
-    print("current state:")
+    attractors = hp.list_attractors()
+    pprint(attractors)
     
 def test2():
     matrix = np.array([[1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1, 1, 1, 1, 1, 1, 1], 
@@ -174,13 +175,13 @@ def with_an_image():
 if __name__ == '__main__':
 #    sim1ple_convergence()
     
-#    simple_hebbian()
+    multiple_hebbian()
     
 #    simple_hebbian2()
     
 #    with_an_image()
     
-    test2()
+#    test2()
     
 
 

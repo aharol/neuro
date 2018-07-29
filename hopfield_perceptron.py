@@ -15,8 +15,8 @@ from custom_data_structs import Dataset
 from plotters import digitFrame
 from os import path 
 
-rate = .01
-err = .4
+rate = .001
+err = .01
 
 
 matrix = np.array([[1, 1, -1, 1, -1, 1, -1, -1],
@@ -32,6 +32,11 @@ matrix = np.array(ds)
 A = matrix < 50
 matrix = np.ones(np.shape(matrix), dtype=int)
 matrix[A] = -1
+
+matrix = np.array([[1, 1, -1, 1, -1, 1, -1, -1],
+                       [1, 1, -1, 1, -1, -1, -1, 1],
+                       [1, 1, 1, 1, -1, -1, -1, -1],
+                       [-1, 1, -1, 1, -1, 1, -1, 1]])
 
 #matrix = np.array([[1, 1, -1, 1, -1, 1, -1, -1],
 #                       [1, 1, -1, 1, -1, -1, -1, 1],
@@ -57,35 +62,40 @@ def transformation(vector):
             j -= 1
     return z
 
-vector = matrix[0, :]
-z = transformation(vector)
-sol = np.array([random.choice([-.01, .01]) for _ in range(len(z[0,:]))])
-
-amm_vectors = len(matrix[:, 0])
-
-for i in range(30000):
-    print("Iteration : %d" % i)
-    still_wrong = False
-    for j in range(amm_vectors):
-        vector = matrix[j, :]
-        z = transformation(vector)
-        for i in range(len(vector)):
-            if not sol.dot(z[i, :]) * vector[i] > err: # prediction incorrect
-                sol += rate * z[i, :] * vector[i]
-                still_wrong = True
-    if not still_wrong:
-        print("We are good")
-        break
+def hopfield_perceptron(matrix):
     
-triu = zip(*np.triu_indices(len(vector), 1))
-weights = np.matlib.zeros((len(vector), len(vector)))
-for ind, iu in enumerate(triu):
-    weights[iu] = sol[ind]
+    vector = matrix[0, :]
+    z = transformation(vector)
+    sol = np.array([random.choice([-.01, .01]) for _ in range(len(z[0,:]))])
+    
+    amm_vectors = len(matrix[:, 0])
+    
+    for i in range(1000):
+        print("Iteration : %d" % i)
+        still_wrong = False
+        for j in range(amm_vectors):
+            vector = matrix[j, :]
+            z = transformation(vector)
+            for i in range(len(vector)):
+                if not sol.dot(z[i, :]) * vector[i] > err: # prediction incorrect
+                    sol += rate * z[i, :] * vector[i]
+                    still_wrong = True
+        if not still_wrong:
+            print("We are good")
+            break
+        
+    triu = zip(*np.triu_indices(len(vector), 1))
+    weights = np.matlib.zeros((len(vector), len(vector)))
+    for ind, iu in enumerate(triu):
+        weights[iu] = sol[ind]
+    
+    weights += weights.T
 
-weights += weights.T
+    tresh = -1 * sol[-len(vector):]
+    
+    return weights, tresh
 
-tresh = -1 * sol[-len(vector):]
-
+weights, tresh = hopfield_perceptron(matrix)
 np.savetxt('weights.txt', weights)
 np.savetxt('tresh.txt', tresh)
 
@@ -97,10 +107,7 @@ pprint(hp.list_attractors())
 #    hp.plot_neuron_states(4, 2, state)
 
 
-     0  1 -1
-     1  0  1
-    -1  1  0
-    
+
     
     
 
